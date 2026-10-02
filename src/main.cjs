@@ -26,6 +26,8 @@ const { UpdateGate } = require("./update-gate.cjs");
 const { AppUpdates } = require("./app-updates.cjs");
 const { Analytics } = require("./analytics.cjs");
 const smoke = process.argv.includes("--smoke");
+// CI Mac runners may not provide a usable graphics device.
+if (smoke) app.disableHardwareAcceleration();
 const manualMacUpdates =
   process.platform === "darwin" &&
   require("../package.json").macAutoUpdates !== true;

@@ -205,5 +205,5 @@ async function release() {
 }
 release().catch((error) => {
   console.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });

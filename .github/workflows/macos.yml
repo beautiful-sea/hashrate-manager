@@ -49,17 +49,17 @@ jobs:
       - run: npm run check
       - run: npm run lint
       - name: Build and test packaged app
-        run: node scripts/mac-release.cjs "$RELEASE_VERSION" "${{ matrix.arch }}"
+        run: |
+          node scripts/mac-release.cjs "$RELEASE_VERSION" "${{ matrix.arch }}"
+          test -s "dist/mac/$RELEASE_VERSION/${{ matrix.arch }}/verification-mac-${{ matrix.arch }}.json"
       - uses: actions/upload-artifact@v4
         with:
           name: mac-${{ matrix.arch }}
           if-no-files-found: error
           path: |
-            dist/mac/*/*/*.dmg
-            dist/mac/*/*/*.zip
-            dist/mac/*/*/*.blockmap
-            dist/mac/*/*/*.yml
-            dist/mac/*/*/verification-*.json
+            dist/mac/${{ inputs.version }}/${{ matrix.arch }}/Hashrate-Manager-mac-${{ matrix.arch }}.*
+            dist/mac/${{ inputs.version }}/${{ matrix.arch }}/latest-mac-${{ matrix.arch }}.yml
+            dist/mac/${{ inputs.version }}/${{ matrix.arch }}/verification-mac-${{ matrix.arch }}.json
   publish:
     needs: build
     runs-on: ubuntu-latest
