@@ -35,6 +35,8 @@ jobs:
       - name: Validate version
         run: node -e "if(!/^\\d+\\.\\d+\\.\\d+$/.test(process.env.RELEASE_VERSION))process.exit(1)"
       - run: npm ci
+      - name: Install Electron runtime
+        run: node node_modules/electron/install.js
       - run: npm test
       - run: npm run check
       - run: npm run lint
