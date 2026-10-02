@@ -33,3 +33,7 @@ __pycache__/
 /scripts/setup-updates-host.py
 /scripts/publish-release.cjs
 /docs/METRICAS.md
+
+# Public landing page and Pages deployment
+!/site/
+!/.github/

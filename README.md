@@ -47,3 +47,11 @@ As sessões e configurações ficam no perfil local do usuário e não fazem par
 ## Licença
 
 O projeto é público para consulta. Ainda não há uma licença de código aberto definida; a publicação não concede automaticamente direitos de redistribuição.
+
+## Site e download
+
+Landing page: https://beautiful-sea.github.io/hashrate-manager/
+
+Download permanente: https://ecoesponja.com.br/hashrate-updates/Hashrate-Manager-Setup-latest-win-x64.exe
+
+O site é publicado pelo GitHub Pages a partir de site/, usando o workflow de Pages. O instalador permanece no servidor oficial; a rotina privada de publicação atualiza o endereço permanente depois de validar os arquivos de cada versão. O rótulo da versão no site consulta o feed oficial e o download funciona mesmo se essa consulta falhar.
