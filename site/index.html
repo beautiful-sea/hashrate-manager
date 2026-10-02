@@ -23,6 +23,7 @@
       >
       <nav aria-label="Navegação principal">
         <a href="#recursos">Recursos</a><a href="#comecar">Como começar</a
+        ><a href="#contribuir">Contribuir</a
         ><a class="nav-download" href="#download"
           >Baixar o app <span aria-hidden="true">↗</span></a
         >
@@ -260,6 +261,29 @@
           </details>
         </div>
       </section>
+      <section id="contribuir" class="contribution-section wrap">
+        <div>
+          <p class="eyebrow">FEITO COM APOIO DA COMUNIDADE</p>
+          <h2>Gratuito para usar.<br />Seu apoio faz crescer.</h2>
+          <p>
+            O Hashrate Manager é totalmente gratuito. Sua contribuição, de
+            qualquer valor, ajuda a manter o projeto e desenvolver novos
+            recursos.
+          </p>
+        </div>
+        <div class="contribution-actions">
+          <button
+            type="button"
+            class="button contribution-button"
+            data-open-donation
+          >
+            ♡ Contribuir com o projeto
+          </button>
+          <p class="download-caption">
+            Opcional. Todos os recursos continuam disponíveis.
+          </p>
+        </div>
+      </section>
       <section id="download" class="download-section wrap">
         <div>
           <p class="eyebrow">PRONTO PARA COMEÇAR?</p>
@@ -320,5 +344,57 @@
         >Reportar um problema ↗</a
       >
     </footer>
+    <dialog
+      id="donation-modal"
+      aria-labelledby="donation-title"
+      aria-describedby="donation-description"
+    >
+      <button
+        type="button"
+        id="donation-close"
+        class="modal-close"
+        aria-label="Fechar contribuição"
+      >
+        ×
+      </button>
+      <p class="eyebrow">APOIE O PROJETO</p>
+      <h2 id="donation-title">Ajude o projeto a crescer</h2>
+      <p id="donation-description">
+        Contribua com qualquer valor pelo Pix. Seu apoio ajuda a manter o
+        sistema gratuito e desenvolver novos recursos.
+      </p>
+      <img
+        class="donation-qr"
+        src="donation-qr.png"
+        alt="QR Code Pix para contribuir com o projeto"
+        width="220"
+        height="220"
+      />
+      <p class="beneficiary">
+        <span>Recebedora</span><strong>Vitoria Quintino Duque</strong>
+      </p>
+      <label class="pix-label" for="donation-key">Chave Pix</label
+      ><input
+        id="donation-key"
+        class="pix-field"
+        value="05bc32c4-67e1-42ca-8f01-f21b0d3a7ec0"
+        readonly
+      /><label class="pix-label" for="donation-code">Pix Copia e Cola</label
+      ><textarea
+        id="donation-code"
+        class="pix-field"
+        rows="3"
+        readonly
+        spellcheck="false"
+      >
+00020126580014BR.GOV.BCB.PIX013605bc32c4-67e1-42ca-8f01-f21b0d3a7ec05204000053039865802BR5922Vitoria Quintino Duque6009SAO PAULO62140510XtVdauV53g63047DEC</textarea
+      ><button type="button" id="donation-copy" class="button primary">
+        Copiar código Pix <span aria-hidden="true">↗</span>
+      </button>
+      <p id="donation-feedback" role="status" aria-live="polite"></p>
+      <p class="donation-note">
+        Doar é opcional. Todos os recursos continuam disponíveis para você.
+      </p>
+    </dialog>
   </body>
 </html>

@@ -57,3 +57,42 @@ refreshMacVersion();
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) refreshMacVersion();
 });
+
+const donationModal = document.querySelector("#donation-modal");
+let donationTrigger;
+document.querySelectorAll("[data-open-donation]").forEach((button) => {
+  button.addEventListener("click", () => {
+    donationTrigger = button;
+    document.querySelector("#donation-feedback").textContent = "";
+    donationModal.showModal();
+    document.querySelector("#donation-close").focus();
+  });
+});
+document
+  .querySelector("#donation-close")
+  .addEventListener("click", () => donationModal.close());
+donationModal.addEventListener("close", () => donationTrigger?.focus());
+donationModal.addEventListener("click", (event) => {
+  const bounds = donationModal.getBoundingClientRect();
+  if (
+    event.target === donationModal &&
+    (event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom)
+  )
+    donationModal.close();
+});
+document.querySelector("#donation-copy").addEventListener("click", async () => {
+  const code = document.querySelector("#donation-code");
+  const feedback = document.querySelector("#donation-feedback");
+  try {
+    await navigator.clipboard.writeText(code.value);
+    feedback.textContent = "Código copiado. Cole no seu banco para contribuir.";
+  } catch {
+    code.focus();
+    code.select();
+    feedback.textContent =
+      "Selecione Copiar no seu dispositivo para copiar o código Pix.";
+  }
+});

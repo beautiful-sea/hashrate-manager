@@ -742,3 +742,174 @@ details p {
     max-width: 100%;
   }
 }
+
+.contribution-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 45px;
+  padding-block: 40px 65px;
+  border-top: 1px solid var(--line);
+}
+.contribution-section h2 {
+  font-size: 32px;
+}
+.contribution-section > div > p:not(.eyebrow):not(.download-caption) {
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.contribution-actions {
+  min-width: 300px;
+  text-align: center;
+}
+.contribution-button {
+  background: transparent;
+  border: 1px solid #6fa785;
+  color: var(--green);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.contribution-button:hover {
+  background: #192c23;
+}
+.contribution-button:focus-visible,
+.modal-close:focus-visible,
+.pix-field:focus-visible,
+#donation-copy:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
+}
+#donation-modal {
+  width: min(480px, calc(100% - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  margin: auto;
+  padding: 30px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid #3d5948;
+  border-radius: 12px;
+  box-shadow: 0 25px 90px #0008;
+}
+#donation-modal::backdrop {
+  background: #05090bd9;
+  backdrop-filter: blur(5px);
+}
+#donation-modal .eyebrow {
+  margin: 0 35px 15px 0;
+}
+#donation-modal h2 {
+  font-size: 28px;
+  letter-spacing: -0.8px;
+  line-height: 1.3;
+}
+#donation-description {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.modal-close {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+.donation-qr {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 22px auto 16px;
+  border-radius: 8px;
+}
+.beneficiary {
+  text-align: center;
+  margin: 0 0 22px;
+}
+.beneficiary span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.beneficiary strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.pix-label {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 13px 0 7px;
+}
+.pix-field {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 10px;
+  line-height: 1.5;
+  resize: none;
+  word-break: break-all;
+}
+#donation-copy {
+  width: 100%;
+  margin-top: 18px;
+  cursor: pointer;
+  border: 0;
+  font-family: inherit;
+}
+#donation-feedback {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--green);
+  margin: 12px 0 0;
+}
+#donation-feedback:empty {
+  display: none;
+}
+.donation-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 16px 0 0;
+}
+@media (max-width: 720px) {
+  .contribution-section {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+    padding-block: 30px 45px;
+  }
+  .contribution-section h2 {
+    font-size: 30px;
+  }
+  .contribution-actions {
+    min-width: 0;
+    width: 100%;
+    text-align: left;
+  }
+  .contribution-button {
+    width: 100%;
+    padding-inline: 15px;
+  }
+  #donation-modal {
+    padding: 25px;
+  }
+  #donation-modal h2 {
+    font-size: 25px;
+  }
+}
