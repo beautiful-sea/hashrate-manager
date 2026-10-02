@@ -1,0 +1,42 @@
+name: Recover verified macOS publication
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: macOS build run containing both verified architectures
+        required: true
+        type: string
+      version:
+        description: Stable version in those packages
+        required: true
+        type: string
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: mac-release-${{ inputs.version }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_VERSION: ${{ inputs.version }}
+      BUILD_RUN: ${{ inputs.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify build run
+        run: |
+          gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" > build-run.json
+          gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN/jobs" > build-jobs.json
+          node -e 'const fs=require("fs"),assert=require("assert/strict"),r=JSON.parse(fs.readFileSync("build-run.json")),j=JSON.parse(fs.readFileSync("build-jobs.json"));assert.equal(r.path,".github/workflows/macos.yml");assert.equal(r.status,"completed");for(const arch of ["arm64","x64"])assert(j.jobs.some(x=>x.name.startsWith("build ("+arch+",")&&x.conclusion==="success"));fs.appendFileSync(process.env.GITHUB_ENV,"BUILD_SOURCE="+r.head_sha+"\n");'
+      - uses: actions/download-artifact@v4
+        with:
+          path: mac-artifacts
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - name: Verify artifacts and publish
+        run: |
+          find mac-artifacts -type f -printf '%P\n'
+          GITHUB_SHA="$BUILD_SOURCE" node scripts/publish-mac-release.cjs mac-artifacts
