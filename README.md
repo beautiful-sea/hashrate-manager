@@ -35,7 +35,7 @@ O instalador e os arquivos do atualizador são gerados em `dist/updates/0.2.41`.
 
 ## Dados e serviços
 
-As sessões e configurações ficam no perfil local do usuário e não fazem parte deste repositório. O cliente de métricas anônimas está incluído; sua opção pode ser alterada em Configurações > Privacidade. O servidor de métricas, painel administrativo, credenciais e ferramentas de implantação não estão incluídos. A configuração pública de doações Pix faz parte do aplicativo.
+As sessões e configurações ficam no perfil local do usuário e não fazem parte deste repositório. O cliente de estatísticas está incluído e inicia ativado por padrão; escolhas anteriores de desativação são preservadas. Em Configurações > Privacidade é possível desligar os envios. Além de versão e atividade, o cliente envia totais de saldo restante nas ordens ativas e quantidade de ordens, sem identificação de contas ou ordens. O canal financeiro usa um token temporário separado da identificação de instalação; o servidor mantém contribuições somente na memória por até cinco minutos e mostra somas a partir de três sessões participantes. Contas abertas em vários computadores podem duplicar os totais: são estimativas, não valores sob custódia ou uma auditoria financeira. O servidor de métricas, painel administrativo, credenciais e ferramentas de implantação não estão incluídos. A configuração pública de doações Pix faz parte do aplicativo.
 
 ## Documentação
 

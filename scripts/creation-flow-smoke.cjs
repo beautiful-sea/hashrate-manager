@@ -22,11 +22,7 @@ app.setPath("userData", profile);
 app.commandLine.appendSwitch("no-proxy-server");
 const keyPath = path.join(profile, "fixture-key.pem");
 const certPath = path.join(profile, "fixture-cert.pem");
-const openssl =
-  process.env.HASHRATE_OPENSSL ||
-  (process.platform === "win32"
-    ? "E:/laragon/bin/git/mingw64/bin/openssl.exe"
-    : "openssl");
+const openssl = "E:/laragon/bin/git/mingw64/bin/openssl.exe";
 execFileSync(
   openssl,
   [
@@ -217,7 +213,14 @@ const server = https.createServer(
       if (o)
         return send(shell(flight({ order: o }) + "<h1>" + o.code + "</h1>"));
     }
-    if (req.url === "/painel") return send(shell('<p id="rate">43,00</p>'));
+    if (req.url === "/painel/fidelidade")
+      return send(
+        shell("<p>Nível atual</p><p>Basic</p><p>Bônus atual</p><p>0%</p>"),
+      );
+    if (req.url === "/painel")
+      return send(
+        shell('<p>Você está no nível Basic.</p><p id="rate">43,00</p>'),
+      );
     if (req.url === "/market")
       return send(
         shell(

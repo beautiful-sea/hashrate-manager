@@ -22,11 +22,7 @@ app.setPath("userData", profile);
 app.commandLine.appendSwitch("no-proxy-server");
 const keyPath = path.join(profile, "fixture-key.pem");
 const certPath = path.join(profile, "fixture-cert.pem");
-const openssl =
-  process.env.HASHRATE_OPENSSL ||
-  (process.platform === "win32"
-    ? "E:/laragon/bin/git/mingw64/bin/openssl.exe"
-    : "openssl");
+const openssl = "E:/laragon/bin/git/mingw64/bin/openssl.exe";
 execFileSync(
   openssl,
   [
@@ -164,9 +160,11 @@ async function fixtureResponse(req) {
     return new Response("", { headers: { "Content-Type": "image/png" } });
   }
   if (url.hostname === "rentalhash.com") {
+    if (url.pathname === "/painel/fidelidade")
+      return html("<p>Nível atual</p><p>Basic</p><p>Bônus atual</p><p>0%</p>");
     backend.rentalLoads++;
     return html(
-      `<div>1 PH/s US$ ${br(backend.rate)} por dia</div>${backend.rentalLoads === 1 ? '<img src="/fixture-slow.png">' : ""}`,
+      `<p>Você está no nível Basic.</p><div>1 PH/s US$ ${br(backend.rate)} por dia</div>${backend.rentalLoads === 1 ? '<img src="/fixture-slow.png">' : ""}`,
     );
   }
   if (url.pathname === "/market") {

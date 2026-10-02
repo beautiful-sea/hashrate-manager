@@ -6,11 +6,11 @@
       q("#analytics-enabled").checked = state.consent === true;
       if (action === "analytics-consent")
         q("#analytics-feedback").textContent = state.consent
-          ? "Métricas de uso ativadas."
-          : "Métricas desativadas. Nenhum novo dado será enviado.";
+          ? "MÃ©tricas de uso ativadas."
+          : "MÃ©tricas desativadas. Nenhum novo dado serÃ¡ enviado.";
     } catch {
       q("#analytics-feedback").textContent =
-        "Não foi possível salvar a escolha. Tente novamente.";
+        "NÃ£o foi possÃ­vel salvar a escolha. Tente novamente.";
     }
   }
   q("#analytics-enabled").onchange = (event) =>

@@ -25,6 +25,7 @@ const { withdrawalOverview } = require("./reinvestment.cjs");
 const { UpdateGate } = require("./update-gate.cjs");
 const { AppUpdates } = require("./app-updates.cjs");
 const { Analytics } = require("./analytics.cjs");
+const { financialTotals } = require("./financial-metrics.cjs");
 const smoke = process.argv.includes("--smoke");
 // CI Mac runners may not provide a usable graphics device.
 if (smoke) app.disableHardwareAcceleration();
@@ -476,6 +477,7 @@ if (!app.requestSingleInstanceLock()) {
       });
       analytics = new Analytics(app.getPath("userData"), app.getVersion(), {
         enabled: !smoke && !diagnose,
+        financial: () => financialTotals(monitor),
         busy: () => monitor.busy || reports?.busy || monitor.maintenance,
       });
       await win.loadURL(uiUrl);

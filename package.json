@@ -1,7 +1,7 @@
 {
   "name": "hashrate-manager",
   "productName": "Hashrate Manager",
-  "version": "0.2.44",
+  "version": "0.2.45",
   "description": "Monitor de margem Hashsell e RentalHash",
   "private": true,
   "main": "src/main.cjs",
