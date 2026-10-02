@@ -6,6 +6,10 @@ on:
         description: Stable version matching the source being published
         required: true
         type: string
+      source_commit:
+        description: Expected published source commit (optional for manual builds)
+        required: false
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -28,6 +32,14 @@ jobs:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
     steps:
       - uses: actions/checkout@v4
+      - name: Verify requested source
+        env:
+          EXPECTED_SOURCE: ${{ inputs.source_commit }}
+        run: test -z "$EXPECTED_SOURCE" || test "$EXPECTED_SOURCE" = "$GITHUB_SHA"
+      - name: Verify requested source
+        env:
+          EXPECTED_SOURCE: ${{ inputs.source_commit }}
+        run: test -z "$EXPECTED_SOURCE" || test "$EXPECTED_SOURCE" = "$GITHUB_SHA"
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
