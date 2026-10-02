@@ -27,15 +27,20 @@ function collectPage(kind, mapping) {
     );
   if (kind === "loyalty") {
     const labeled = (label) => {
-      const nodes = [...document.querySelectorAll("p")].filter(
-        (e) => !e.closest("[hidden], [inert]") && label.test(text(e)),
+      const matching = [...document.querySelectorAll("p")].filter((e) =>
+        label.test(text(e)),
       );
-      if (nodes.length !== 1)
+      const visible = matching.filter((e) => !e.closest("[hidden], [inert]"));
+      const nodes = visible.length ? visible : matching;
+      if (!nodes.length)
         fail("Aguardando o plano de fidelidade carregar.", "NOT_READY");
-      const value = nodes[0].nextElementSibling;
-      if (!value || value.tagName !== "P")
+      const values = nodes.map((e) => e.nextElementSibling);
+      if (values.some((value) => !value || value.tagName !== "P"))
         fail("Plano de fidelidade não identificado.", "NOT_READY");
-      return text(value);
+      const unique = [...new Set(values.map(text))];
+      if (unique.length !== 1)
+        fail("Plano de fidelidade ambíguo.", "AMBIGUOUS");
+      return unique[0];
     };
     const plan = labeled(/^(Nível atual|Current level)$/i);
     const bonus = labeled(/^(Bônus atual|Current bonus)$/i);
@@ -103,8 +108,10 @@ function collectPage(kind, mapping) {
   }
   let loyaltyPlan = null;
   if (kind === "rental") {
-    const plans = [...document.querySelectorAll("p")]
-      .filter((e) => !e.closest("[hidden], [inert]"))
+    const nodes = [...document.querySelectorAll("p")];
+    const visible = nodes.filter((e) => !e.closest("[hidden], [inert]"));
+    const candidates = visible.length ? visible : nodes;
+    const plans = candidates
       .map(
         (e) =>
           text(e).match(
@@ -112,7 +119,8 @@ function collectPage(kind, mapping) {
           )?.[1],
       )
       .filter(Boolean);
-    if (plans.length === 1) loyaltyPlan = plans[0];
+    const uniquePlans = [...new Set(plans)];
+    if (uniquePlans.length === 1) loyaltyPlan = uniquePlans[0];
   }
   if (mapping.selector)
     return {

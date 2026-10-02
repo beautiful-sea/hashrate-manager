@@ -70,3 +70,35 @@ test("dashboard identifies current plan separately from the base tariff", () => 
   assert.equal(raw.value.loyaltyPlan, "Silver");
   assert.equal(raw.value.value, "42,00");
 });
+test("server-streamed loyalty remains readable in detached monitor views without accepting conflicting copies", () => {
+  const card =
+    "<div><p>Nível atual</p><p>Silver</p></div><div><p>Bônus atual</p><p>+2,5%</p></div>";
+  for (const html of [
+    "<div hidden>" + card + "</div>",
+    "<div hidden>" + card + card + "</div>",
+  ]) {
+    const w = new JSDOM(html, {
+      url: "https://rentalhash.com/painel/fidelidade",
+      runScripts: "outside-only",
+    }).window;
+    const raw = w.eval(readScript("loyalty", {}));
+    assert.equal(raw.ok, true);
+    assert.equal(applyLoyalty("42", raw.value).rate, "43.05");
+  }
+  const conflicting = new JSDOM(
+    "<div hidden>" + card + card.replace("2,5", "5") + "</div>",
+    {
+      url: "https://rentalhash.com/painel/fidelidade",
+      runScripts: "outside-only",
+    },
+  ).window;
+  assert.equal(conflicting.eval(readScript("loyalty", {})).ok, false);
+  const dashboard = new JSDOM(
+    "<div hidden><p>Você está no nível Silver. Veja o próximo degrau.</p><div>1 PH/s US$ 42,00 por dia</div></div>",
+    { url: "https://rentalhash.com/painel", runScripts: "outside-only" },
+  ).window;
+  assert.equal(
+    dashboard.eval(readScript("rental", { selector: "" })).value.loyaltyPlan,
+    "Silver",
+  );
+});
