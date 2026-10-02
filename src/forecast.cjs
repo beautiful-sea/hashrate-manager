@@ -58,6 +58,8 @@ function forecast(account, now = Date.now()) {
       ...unavailable,
       reason: "Sem consumo suficiente para estimar o retorno.",
     };
+  // Posted credits already contain the loyalty bonus earned in each hour.
+  // Preserve them in both profit and the historical return; never add it again.
   const rate = new D(totals.revenue).minus(cost).div(cost);
   const initialCapital = new D(account.capital.hashsell)
     .plus(account.capital.rental)

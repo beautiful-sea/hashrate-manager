@@ -1,6 +1,6 @@
 const { CreationCoordinator } = require("./creation-coordinator.cjs");
 const { EventEmitter } = require("node:events");
-const { decide, fresh } = require("./engine.cjs");
+const { decide, fresh, marketMargin } = require("./engine.cjs");
 const { assertLiveReady } = require("./config.cjs");
 const { authorizeBid } = require("./bid-safety.cjs");
 class Monitor extends EventEmitter {
@@ -56,6 +56,7 @@ class Monitor extends EventEmitter {
       sources: this.snapshots,
       errors: this.errors,
       result: this.result,
+      marketMargin: marketMargin({ ...this.snapshots, config: this.config }),
       pending: this.store.state.pending,
       history: this.store.state.history
         .slice(-200)

@@ -98,7 +98,7 @@
   function draw() {
     const projection = report.forecast;
     $("#forecast-assumptions").textContent = !forecasting
-      ? "Receita menos consumo e taxas. Receita e custos são agrupados pelo fechamento da hora trabalhada. Os horários originais permanecem nos lançamentos e no CSV."
+      ? "Receita creditada (já inclui o bônus de fidelidade) menos consumo e taxas. Receita e custos são agrupados pelo fechamento da hora trabalhada. Os horários originais permanecem nos lançamentos e no CSV."
       : projection?.available
         ? "Capital: US$ " +
           money(projection.initialCapital) +
@@ -112,7 +112,7 @@
           money(projection.timing.allocationHours) +
           " horas até a próxima reserva de ordem. Essa sequência estima a reaplicação; considera 24 horas de operação por ciclo. Retorno histórico de " +
           money(Number(projection.cycleRate) * 100) +
-          "% por giro; US$ 2 por saque. Estimativa mantendo essas condições."
+          "% por giro, já incluindo os bônus creditados no histórico; US$ 2 por saque. Estimativa mantendo essas condições."
         : projection?.reason || "Aguardando dados";
     const button = $("#report-forecast");
     button.disabled = !projection?.available;

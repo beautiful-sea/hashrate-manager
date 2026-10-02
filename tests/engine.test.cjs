@@ -150,3 +150,26 @@ test("new defaults provide headroom with tick rounding and never exceed the marg
   assert.equal(decide(i).decisions[0].action, "decrease");
   assert.equal(decide(i).decisions[0].target, "39.66");
 });
+
+test("market margin discounts configured fees and recognition and hides stale readings", () => {
+  const { marketMargin } = require("../src/engine.cjs");
+  const x = input();
+  x.rental.rate = "42";
+  x.market.cut = "39.55";
+  assert.equal(Number(marketMargin(x)).toFixed(2), "3.01");
+  assert.equal(marketMargin({ ...x, now: x.now + 76000 }), null);
+  assert.equal(marketMargin({ ...x, rental: undefined }), null);
+  assert.equal(
+    marketMargin({ ...x, market: { cut: "inválido", at: x.now } }),
+    null,
+  );
+  assert.equal(marketMargin({ ...x, rental: { rate: "0", at: x.now } }), null);
+  assert(
+    Number(
+      marketMargin({
+        ...x,
+        config: { ...x.config, recognition: "0.95", otherCost: "0.5" },
+      }),
+    ) < 0,
+  );
+});

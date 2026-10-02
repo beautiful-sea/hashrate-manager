@@ -18,6 +18,7 @@ const {
   readHashsellEditorState,
   editorScript,
 } = require("./hashsell-editor.cjs");
+const { applyLoyalty } = require("./loyalty.cjs");
 const { readScript } = require("./dom.cjs");
 const HOSTS = {
   hashsell: "https://hashsell.com",
@@ -220,8 +221,33 @@ class BrowserAdapter {
     this.assertReadAvailable(site);
     const wc = this.views[kind].webContents;
     const started = Date.now(),
-      expires = started + 15000;
+      expires = started + (kind === "rental" ? 27000 : 15000);
     let requestedAt, response;
+    let loyalty = null;
+    if (kind === "rental") {
+      await this.navigate(
+        wc,
+        HOSTS.rental + "/painel/fidelidade",
+        "rental",
+        7000,
+        true,
+      );
+      const until = Date.now() + 5000;
+      let result;
+      do {
+        result = await deadline(
+          (wc.mainFrame || wc).executeJavaScript(readScript("loyalty", {})),
+          1500,
+          "Leitura da fidelidade",
+        );
+        this.assertReadAvailable("rental");
+        if (result.ok || result.code !== "NOT_READY") break;
+        await new Promise((r) => setTimeout(r, 200));
+      } while (Date.now() < until);
+      if (!result?.ok)
+        throw Error("Aguardando leitura do plano de fidelidade da RentalHash.");
+      loyalty = result.value;
+    }
     for (let attempt = 0; attempt < 2 && Date.now() < expires; attempt++) {
       this.assertReadAvailable(site);
       requestedAt = Date.now();
@@ -299,13 +325,31 @@ class BrowserAdapter {
         items: normalizeOrders(raw, config.orders),
       };
     }
+    if (kind === "rental" && raw.loyaltyPlan !== loyalty.plan)
+      throw Error(
+        "Aguardando confirmar o mesmo plano nas leituras da RentalHash.",
+      );
+    const rentalRate =
+      kind === "rental"
+        ? applyLoyalty(
+            pricePerPH(
+              raw.value,
+              raw.detected ? "PH" : config.rental.unit,
+              raw.detected ? raw.locale : config.rental.locale,
+            ),
+            loyalty,
+          )
+        : null;
     return {
-      at: requestedAt,
-      [kind === "rental" ? "rate" : "cut"]: pricePerPH(
-        raw.value,
-        raw.detected ? (kind === "rental" ? "PH" : "EH") : config[kind].unit,
-        raw.detected ? raw.locale : config[kind].locale,
-      ),
+      ...(rentalRate || {}),
+      at: started,
+      [kind === "rental" ? "rate" : "cut"]:
+        rentalRate?.rate ||
+        pricePerPH(
+          raw.value,
+          raw.detected ? (kind === "rental" ? "PH" : "EH") : config[kind].unit,
+          raw.detected ? raw.locale : config[kind].locale,
+        ),
       detected: raw.detected,
     };
   }

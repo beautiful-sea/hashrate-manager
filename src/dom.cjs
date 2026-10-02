@@ -25,6 +25,27 @@ function collectPage(kind, mapping) {
       "A plataforma exibiu uma falha temporária de carregamento.",
       "SITE_UNAVAILABLE",
     );
+  if (kind === "loyalty") {
+    const labeled = (label) => {
+      const nodes = [...document.querySelectorAll("p")].filter(
+        (e) => !e.closest("[hidden], [inert]") && label.test(text(e)),
+      );
+      if (nodes.length !== 1)
+        fail("Aguardando o plano de fidelidade carregar.", "NOT_READY");
+      const value = nodes[0].nextElementSibling;
+      if (!value || value.tagName !== "P")
+        fail("Plano de fidelidade não identificado.", "NOT_READY");
+      return text(value);
+    };
+    const plan = labeled(/^(Nível atual|Current level)$/i);
+    const bonus = labeled(/^(Bônus atual|Current bonus)$/i);
+    if (
+      !/^[A-Za-z][A-Za-z -]{0,39}$/.test(plan) ||
+      !/^\+?\d+(?:[.,]\d+)?%$/.test(bonus)
+    )
+      fail("Plano de fidelidade inválido.", "INVALID_DATA");
+    return { plan, bonus, locale: bonus.includes(",") ? "pt-BR" : "en-US" };
+  }
   if (kind === "orders") {
     let rows;
     if (mapping.row) rows = [...document.querySelectorAll(mapping.row)];
@@ -80,8 +101,25 @@ function collectPage(kind, mapping) {
       })
       .filter(Boolean);
   }
+  let loyaltyPlan = null;
+  if (kind === "rental") {
+    const plans = [...document.querySelectorAll("p")]
+      .filter((e) => !e.closest("[hidden], [inert]"))
+      .map(
+        (e) =>
+          text(e).match(
+            /^(?:Você está no nível|You are at level) ([A-Za-z][A-Za-z -]{0,39})\./,
+          )?.[1],
+      )
+      .filter(Boolean);
+    if (plans.length === 1) loyaltyPlan = plans[0];
+  }
   if (mapping.selector)
-    return { value: text(one(document, mapping.selector)), detected: false };
+    return {
+      value: text(one(document, mapping.selector)),
+      detected: false,
+      loyaltyPlan,
+    };
   const money = (t) => t.match(/(?:US\$|USD|\$)\s*([\d.,]+)/i)?.[1];
   const candidates = [];
   if (kind === "rental") {
@@ -119,6 +157,7 @@ function collectPage(kind, mapping) {
       unique.length ? "AMBIGUOUS" : "NOT_READY",
     );
   return {
+    loyaltyPlan,
     value: unique[0],
     detected: true,
     locale: document.documentElement.lang.toLowerCase().startsWith("en")

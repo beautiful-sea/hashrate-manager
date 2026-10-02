@@ -52,6 +52,26 @@ function fresh(snapshot, now, c) {
     now - snapshot.at <= c.maxAgeSeconds * 1000
   );
 }
+function marketMargin({ rental, market, config, now = Date.now() }) {
+  if (![rental, market].every((source) => fresh(source, now, config)))
+    return null;
+  try {
+    const revenue = new D(rental.rate).mul(config.recognition);
+    const cost = new D(market.cut)
+      .mul(new D(1).plus(config.fee))
+      .plus(config.otherCost);
+    if (
+      !revenue.isFinite() ||
+      revenue.lte(0) ||
+      !cost.isFinite() ||
+      new D(market.cut).lt(0)
+    )
+      return null;
+    return revenue.minus(cost).div(revenue).mul(100).toString();
+  } catch {
+    return null;
+  }
+}
 function decide({
   rental,
   market,
@@ -176,4 +196,11 @@ function decide({
   });
   return { ceiling: max.toString(), decisions, blocked: null };
 }
-module.exports = { parseNumber, pricePerPH, ceiling, decide, fresh };
+module.exports = {
+  parseNumber,
+  pricePerPH,
+  ceiling,
+  decide,
+  fresh,
+  marketMargin,
+};

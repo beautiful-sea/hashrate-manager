@@ -255,12 +255,35 @@ function render(s) {
     : "Iniciar monitoramento";
   $("#refresh").disabled = s.busy;
   $("#rental-value").textContent = money(s.sources.rental?.rate);
+  const loyalty = s.sources.rental?.loyalty;
+  $("#rental-loyalty").textContent = loyalty
+    ? loyalty.plan +
+      " · bônus de " +
+      Number(loyalty.bonus * 100).toLocaleString("pt-BR") +
+      "% incluído"
+    : "Aguardando leitura da fidelidade";
   $("#cut-value").textContent = money(s.sources.market?.cut);
   $("#ceiling-value").textContent = money(s.result.ceiling);
   $("#margin-value").replaceChildren(
     document.createTextNode(money(Number(s.config.margin) * 100, 2)),
     el("span", "%"),
   );
+  const currentMargin = s.marketMargin;
+  $("#current-margin-value").replaceChildren(
+    document.createTextNode(
+      currentMargin == null ? "—" : money(currentMargin, 2),
+    ),
+    ...(currentMargin == null ? [] : [el("span", "%")]),
+  );
+  $("#current-margin-value").classList.toggle(
+    "accent",
+    currentMargin != null &&
+      Number(currentMargin) >= Number(s.config.margin) * 100,
+  );
+  $("#current-margin-note").textContent =
+    currentMargin == null
+      ? "Aguardando leitura das plataformas"
+      : "Taxa Hashsell e outros custos descontados. Saques RentalHash à parte.";
   const age = (source) =>
     source
       ? `${Math.max(0, Math.floor((Date.now() - source.at) / 1000))}s atrás`

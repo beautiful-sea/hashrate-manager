@@ -164,3 +164,13 @@ test("forecast excludes a prior-day labeled credit closing on the current day", 
   assert.equal(forecast(a, now).cycleRate, "0.1");
   assert.equal(JSON.stringify(a), before);
 });
+test("loyalty already posted in hourly credits is included exactly once in historical forecast", () => {
+  const a = account();
+  a.entries[0].amount = "112.75"; // US$110 base credited with Silver +2.5%.
+  const before = JSON.stringify(a);
+  const f = forecast(a, now);
+  assert.equal(f.cycleRate, "0.1275");
+  assert.equal(f.baseline, "10.75");
+  assert.equal(f.days[3].capital, "110.75");
+  assert.equal(JSON.stringify(a), before);
+});
