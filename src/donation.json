@@ -1,0 +1,6 @@
+{
+  "payload": "00020126580014BR.GOV.BCB.PIX013605bc32c4-67e1-42ca-8f01-f21b0d3a7ec05204000053039865802BR5922Vitoria Quintino Duque6009SAO PAULO62140510XtVdauV53g63047DEC",
+  "beneficiary": "Vitoria Quintino Duque",
+  "key": "05bc32c4-67e1-42ca-8f01-f21b0d3a7ec0",
+  "qr": "../assets/donation-qr.png"
+}

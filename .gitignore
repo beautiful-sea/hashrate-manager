@@ -1,0 +1,35 @@
+# Public source allowlist
+/*
+!/.gitignore
+!/README.md
+!/package.json
+!/package-lock.json
+!/src/
+!/tests/
+!/scripts/
+!/docs/
+# Never commit local sessions, diagnostics, credentials or administration
+node_modules/
+dist/
+artifacts/
+server/
+.codex/
+.env
+.env.*
+*.log
+*.pem
+*.key
+state.json
+reports.json
+analytics.json
+Cookies*
+Cache/
+Partitions/
+__pycache__/
+/scripts/inspect-*
+/scripts/diagnose-*
+/scripts/probe-*
+/scripts/verify-creation-readers.cjs
+/scripts/setup-updates-host.py
+/scripts/publish-release.cjs
+/docs/METRICAS.md

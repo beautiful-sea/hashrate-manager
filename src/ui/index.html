@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Hashrate Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">H<span>↗</span></span>
+        <div>hashrate<span class="brand-sub">MANAGER</span></div>
+      </div>
+      <div class="workspace-label">CENTRAL DE OPERAÇÕES</div>
+      <nav>
+        <button data-tab="dashboard" class="nav active">
+          <span>◫</span> Visão geral</button
+        ><button data-tab="hashsell" class="nav">
+          <span>↗</span> Hashsell <small>COMPRA</small></button
+        ><button data-tab="rental" class="nav">
+          <span>↙</span> RentalHash <small>VENDA</small></button
+        ><button data-tab="history" class="nav"><span>◷</span> Histórico</button
+        ><button data-tab="settings" class="nav">
+          <span>⚙</span> Configurações
+        </button>
+      </nav>
+      <button id="contribute-project" class="button subtle">
+        ♡ Contribuir com o projeto
+      </button>
+      <div class="sidebar-bottom">
+        <div class="engine-light">
+          <i id="engine-dot"></i
+          ><strong id="engine-label">Motor pausado</strong>
+        </div>
+        <p>Monitoramento local.<br />Mantenha o computador ligado.</p>
+        <span class="version" id="app-version">DESKTOP</span>
+        <button id="updates-check" class="button subtle">
+          Verificar atualização
+        </button>
+        <button
+          id="app-quit"
+          type="button"
+          class="button subtle"
+          title="Encerrar o aplicativo"
+        >
+          Sair
+        </button>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <div class="breadcrumb">
+          Operação <span>/</span> <b id="page-title">Visão geral</b>
+        </div>
+        <div class="header-right">
+          <span id="mode-label" class="badge">PAUSADO</span
+          ><span class="avatar">HM</span>
+        </div>
+      </header>
+      <div id="app-update" class="notice update-notice" hidden>
+        <span id="app-update-text"></span>
+        <div id="update-progress" hidden>
+          <label id="update-progress-label" for="update-download"></label
+          ><progress id="update-download" max="100" value="0"></progress>
+        </div>
+        <button id="app-update-action" class="button primary" hidden>
+          Atualizar e reiniciar</button
+        ><button id="app-update-cancel" class="button subtle" hidden>
+          Depois
+        </button>
+      </div>
+      <dialog
+        id="update-modal"
+        aria-labelledby="update-modal-title"
+        aria-describedby="update-modal-description"
+      >
+        <div class="update-modal-icon" aria-hidden="true">↻</div>
+        <div class="eyebrow">HASHRATE MANAGER</div>
+        <h2 id="update-modal-title">Nova versão disponível</h2>
+        <span id="update-modal-version" class="update-modal-version"></span>
+        <p id="update-modal-description">
+          A atualização está pronta. O aplicativo será reiniciado para instalar.
+        </p>
+        <div id="update-modal-progress">
+          <label
+            id="update-modal-progress-label"
+            for="update-modal-download"
+          ></label
+          ><progress
+            id="update-modal-download"
+            max="100"
+            value="100"
+          ></progress>
+        </div>
+        <p class="update-modal-note">
+          Suas contas e seu histórico serão preservados.
+        </p>
+        <div class="update-modal-actions">
+          <button id="update-modal-later" class="button subtle" autofocus>
+            Agora não
+          </button>
+          <button id="update-modal-install" class="button primary">
+            Atualizar e reiniciar
+          </button>
+        </div>
+      </dialog>
+      <div id="toast" role="status" hidden></div>
+      <section id="page-dashboard" class="page">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">CONTROLE DE MARGEM</div>
+            <h1>Sua operação, em perspectiva.</h1>
+            <p>Compre com disciplina. Acompanhe cada decisão.</p>
+          </div>
+          <div class="actions">
+            <button id="refresh" class="button subtle">↻ Atualizar</button
+            ><button id="toggle-running" class="button primary">
+              Iniciar monitoramento
+            </button>
+          </div>
+        </div>
+        <div id="notice" class="notice">
+          Conecte suas contas nas abas laterais e inicie o monitoramento.
+        </div>
+        <div class="metrics">
+          <article class="metric">
+            <div class="metric-label">RECEITA RENTALHASH <span>↙</span></div>
+            <div class="metric-value" id="rental-value">—</div>
+            <p>US$ / PH/s / dia <span id="rental-age">Sem leitura</span></p>
+          </article>
+          <article class="metric">
+            <div class="metric-label">CORTE HASHSELL <span>↗</span></div>
+            <div class="metric-value" id="cut-value">—</div>
+            <p>US$ / PH/s / dia <span id="market-age">Sem leitura</span></p>
+          </article>
+          <article class="metric highlight">
+            <div class="metric-label">SEU TETO DE LANCE <span>⌁</span></div>
+            <div class="metric-value" id="ceiling-value">—</div>
+            <p>US$ / PH/s / dia <span>Taxa incluída no cálculo</span></p>
+          </article>
+          <article class="metric">
+            <div class="metric-label">MARGEM MÍNIMA <span>◎</span></div>
+            <div class="metric-value accent" id="margin-value">
+              5<span>%</span>
+            </div>
+            <p>Sobre a receita <span>Meta estimada</span></p>
+          </article>
+        </div>
+        <div class="content-grid">
+          <article class="panel orders-panel">
+            <div class="panel-title">
+              <div>
+                <h2>
+                  Ordens acompanhadas
+                  <span id="order-count" class="count">0</span>
+                </h2>
+                <p>Preços normalizados em US$ / PH/s / dia.</p>
+              </div>
+              <span id="last-cycle">Aguardando leitura</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ordem / situação</th>
+                    <th>Lance atual</th>
+                    <th>Lance proposto</th>
+                    <th>Margem est.</th>
+                    <th>Decisão</th>
+                  </tr>
+                </thead>
+                <tbody id="orders-body"></tbody>
+              </table>
+            </div>
+            <div id="empty-orders" class="empty">
+              <div class="empty-icon">◫</div>
+              <h3>Pronto para acompanhar suas ordens</h3>
+              <p>
+                Faça login na Hashsell e na RentalHash.<br />Depois, clique em
+                Iniciar monitoramento para acompanhar todas as ordens.
+              </p>
+            </div>
+            <div class="panel-footer">
+              <span id="managed-count">Detecção automática de ordens</span
+              ><button id="configure-strategy" class="text-button">
+                Configurar estratégia →
+              </button>
+            </div>
+          </article>
+          <article class="panel strategy-panel">
+            <div class="panel-title">
+              <div>
+                <h2>Como o motor decide</h2>
+                <p>O menor lance dentro da sua margem.</p>
+              </div>
+            </div>
+            <div class="steps">
+              <div class="step">
+                <span>01</span>
+                <div>
+                  <strong>Ler a receita de venda</strong>
+                  <p>Tarifa atual no painel RentalHash.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span>02</span>
+                <div>
+                  <strong>Reservar sua margem</strong>
+                  <p>Descontar taxas e custos configurados.</p>
+                </div>
+              </div>
+              <div class="step">
+                <span>03</span>
+                <div>
+                  <strong>Ajustar com limite</strong>
+                  <p>Subir ou reduzir, sempre dentro do teto.</p>
+                </div>
+              </div>
+            </div>
+            <div class="mode-card">
+              <span class="small-label">AJUSTES DE LANCE</span
+              ><strong id="execution-title"
+                >Ajustes automáticos desligados</strong
+              >
+              <p id="execution-description">
+                Leituras reais e propostas de lance, sem alterações nas ordens.
+              </p>
+              <button id="enable-live" class="button secondary">
+                Ligar ajustes automáticos
+              </button>
+            </div>
+          </article>
+        </div>
+        <article
+          class="panel creation-tracker"
+          aria-label="Acompanhamento de novas ordens"
+        >
+          <div class="creation-tracker-copy">
+            <div class="creation-tracker-heading">
+              <h2>Novas ordens automáticas</h2>
+              <span id="creation-tracker-badge" class="creation-tracker-badge"
+                >Desligadas</span
+              >
+            </div>
+            <p id="creation-tracker-status" role="status"></p>
+          </div>
+          <div class="creation-tracker-schedule">
+            <span class="small-label">PRÓXIMA VERIFICAÇÃO</span>
+            <strong id="creation-tracker-time">—</strong>
+            <small id="creation-tracker-last"></small>
+          </div>
+        </article>
+        <div class="bottom-grid">
+          <article class="panel sources-panel">
+            <div class="panel-title">
+              <h2>Conexões e leituras</h2>
+            </div>
+            <div id="source-status"></div>
+          </article>
+          <article class="panel activity-panel">
+            <div class="panel-title">
+              <h2>Última atividade</h2>
+              <button id="view-history" class="text-button">
+                Ver histórico →
+              </button>
+            </div>
+            <div id="recent-activity" class="activity"></div>
+          </article>
+        </div>
+        <p class="footnote">
+          Margem estimada não comprova crédito ou lucro. Pausar o monitor não
+          cancela ordens e não interrompe o gasto na Hashsell.
+        </p>
+      </section>
+      <section id="page-hashsell" class="site-page" hidden>
+        <div class="site-toolbar">
+          <span>Hashsell · sessão de compra isolada</span>
+          <div>
+            <button data-reload="hashsell" class="button subtle">
+              Recarregar</button
+            ><button data-inspect="hashsell" class="button subtle">
+              Inspecionar campos
+            </button>
+          </div>
+        </div>
+      </section>
+      <section id="page-rental" class="site-page" hidden>
+        <div class="site-toolbar">
+          <span>RentalHash · sessão de venda isolada</span>
+          <div>
+            <button data-reload="rental" class="button subtle">
+              Recarregar</button
+            ><button data-inspect="rental" class="button subtle">
+              Inspecionar campos
+            </button>
+          </div>
+        </div>
+      </section>
+      <section id="page-history" class="page" hidden>
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">RASTREABILIDADE</div>
+            <h1>Cada decisão tem um registro.</h1>
+            <p>Análises de lance, envios e confirmações.</p>
+          </div>
+          <button id="export" class="button secondary">
+            Exportar histórico
+          </button>
+        </div>
+        <div class="panel">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Horário</th>
+                  <th>Tipo</th>
+                  <th>Ordem</th>
+                  <th>Detalhes</th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <section id="page-settings" class="page" hidden>
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">ESTRATÉGIA E INTEGRAÇÕES</div>
+            <h1>Os limites da sua operação.</h1>
+            <p>Salvar alterações desliga os ajustes automáticos.</p>
+          </div>
+        </div>
+
+        <form id="settings-form">
+          <p id="settings-save-status" role="status">
+            As alterações só entram em vigor após salvar as configurações.
+          </p>
+          <div id="creation-settings" class="panel settings-panel">
+            <div class="settings-heading">
+              <h2>Novas ordens automáticas</h2>
+              <button
+                id="creation-load-pools"
+                type="button"
+                class="button subtle"
+              >
+                Carregar pools da Hashsell
+              </button>
+            </div>
+            <p id="creation-status" role="status" class="muted"></p>
+            <label class="settings-toggle"
+              ><input name="creation-enabled" type="checkbox" /> Criar uma ordem
+              quando houver saldo disponível</label
+            >
+            <div class="form-grid">
+              <label
+                >Quanto usar na nova ordem<select name="creation-funding">
+                  <option value="fixed">Valor fixo</option>
+                  <option value="all">Todo o saldo disponível</option>
+                </select></label
+              >
+              <label
+                >Valor por ordem (US$)<input
+                  name="creation-amount"
+                  type="number"
+                  min="5"
+                  step="0.01"
+              /></label>
+              <label
+                >Criar quando o saldo atingir (US$)<input
+                  name="creation-minimumBalance"
+                  type="number"
+                  min="0"
+                  step="any"
+              /></label>
+              <label
+                >Definir a ordem por<select name="creation-sizing">
+                  <option value="power">Potência manual</option>
+                  <option value="duration">Duração desejada</option>
+                </select></label
+              >
+              <label hidden
+                >Duração desejada (horas)<input
+                  name="creation-hours"
+                  type="number"
+                  min="0"
+                  step="any"
+              /></label>
+              <label
+                >Limite de potência (PH/s)<input
+                  name="creation-speedPH"
+                  type="number"
+                  min="1"
+                  step="0.0001"
+              /></label>
+              <label
+                >Pool de entrega<select name="creation-destination">
+                  <option value="">Carregue os pools da Hashsell</option>
+                </select></label
+              >
+            </div>
+            <label class="settings-toggle"
+              ><input name="creation-allowActive" type="checkbox" /> Permitir
+              nova ordem com outras ordens ativas</label
+            >
+            <p class="muted">
+              O app calcula o lance dentro da sua margem. O saldo mínimo define
+              quando iniciar. Pela duração, o app calcula a potência. O tempo é
+              estimado e pode variar com o lance e a entrega.
+            </p>
+          </div>
+          <div class="panel settings-panel">
+            <h2>Margem e limites</h2>
+            <div class="form-grid">
+              <label
+                >Margem mínima sobre receita (%)<input
+                  name="margin"
+                  type="number"
+                  min="0"
+                  step="any"
+                  required /></label
+              ><label
+                >Taxa Hashsell (%)<input
+                  name="fee"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  required /></label
+              ><label
+                >Hashrate reconhecido na venda (%)<input
+                  name="recognition"
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="0.01"
+                  required /></label
+              ><label
+                >Outros custos (US$/PH/dia)<input
+                  name="otherCost"
+                  type="number"
+                  min="0"
+                  step="0.000001"
+                  required /></label
+              ><label
+                >Incremento do lance (US$/PH/dia)<input
+                  name="tick"
+                  type="number"
+                  min="0.000001"
+                  step="0.000001"
+                  required /></label
+              ><label
+                >Folga sobre o corte (US$/PH/dia)<input
+                  name="buffer"
+                  type="number"
+                  min="0"
+                  step="0.000001"
+                  required /></label
+              ><label
+                >Consulta a cada (segundos)<input
+                  name="pollSeconds"
+                  type="number"
+                  min="15"
+                  max="300"
+                  required /></label
+              ><label
+                >Validade da leitura (segundos)<input
+                  name="maxAgeSeconds"
+                  type="number"
+                  min="15"
+                  max="300"
+                  required /></label
+              ><label
+                >Intervalo entre ajustes (segundos)<input
+                  name="cooldownSeconds"
+                  type="number"
+                  min="0"
+                  max="3600"
+                  required /></label
+              ><label
+                >Ciclos estáveis antes de reduzir<input
+                  name="decreaseCycles"
+                  type="number"
+                  min="1"
+                  max="20"
+                  required
+              /></label>
+            </div>
+            <p class="muted">
+              Todas as ordens ativas são acompanhadas automaticamente. Novas
+              ordens entram na estratégia na próxima leitura, sem informar IDs.
+            </p>
+            <p class="muted">
+              O fator de reconhecimento é uma hipótese operacional. Não é uma
+              conciliação dos créditos da RentalHash.
+            </p>
+          </div>
+          <div class="actions">
+            <button type="submit" class="button primary">
+              Salvar configurações</button
+            ><button type="button" id="reset-form" class="button subtle">
+              Descartar edição
+            </button>
+          </div>
+        </form>
+        <div class="panel settings-panel">
+          <h2>Privacidade</h2>
+          <p>
+            As métricas de uso são ativadas por padrão e ajudam a melhorar o
+            projeto. Enviamos apenas a versão e a atividade desta instalação.
+            Não enviamos logins, senhas, saldos ou ordens.
+          </p>
+          <label class="settings-toggle"
+            ><input id="analytics-enabled" type="checkbox" /> Compartilhar
+            métricas de uso</label
+          >
+          <p class="muted">
+            Usamos um identificador aleatório desta instalação. Você pode
+            desativar a qualquer momento; isso interrompe os próximos envios.
+            Atividade diária é mantida por 90 dias.
+          </p>
+          <p id="analytics-feedback" role="status"></p>
+        </div>
+      </section>
+    </main>
+    <dialog id="donation-modal" aria-labelledby="donation-title">
+      <button id="donation-close" class="button subtle" aria-label="Fechar">
+        ×
+      </button>
+      <h2 id="donation-title">Ajude o projeto a crescer</h2>
+      <p>
+        O Hashrate Manager é totalmente gratuito. Sua contribuição, de qualquer
+        valor, ajuda a manter o projeto e desenvolver novos recursos.
+      </p>
+      <p class="donation-note">
+        Doar é opcional. Todos os recursos continuam disponíveis para você.
+      </p>
+      <div id="donation-payment" hidden>
+        <img
+          id="donation-qr"
+          alt="QR Code Pix para contribuir com o projeto"
+          width="220"
+          height="220"
+        />
+        <p id="donation-beneficiary"></p>
+        <button id="donation-copy" class="button primary">
+          Copiar código Pix
+        </button>
+      </div>
+      <p id="donation-unavailable">
+        As contribuições via Pix estarão disponíveis em breve.
+      </p>
+      <p id="donation-feedback" role="status"></p>
+    </dialog>
+    <script src="analytics.js"></script>
+    <script src="donations.js"></script>
+    <script src="report-chart.js"></script>
+    <script src="reports.js"></script>
+    <script src="withdrawals.js"></script>
+    <script src="monitor-status.js"></script>
+    <script src="app.js"></script>
+    <script src="updates.js"></script>
+  </body>
+</html>
