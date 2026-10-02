@@ -78,6 +78,12 @@
       q("#app-update-text").textContent = messages[s.status] || "";
       q("#app-update-action").hidden = s.status !== "ready";
       q("#app-update-cancel").hidden = s.status !== "waiting";
+      q("#updates-check").textContent = s.manualDownloadUrl
+        ? "Atualizações para Mac"
+        : "Verificar atualização";
+      q("#updates-check").title = s.manualDownloadUrl
+        ? "Baixar a versão mais recente no site"
+        : "";
       q("#updates-check").disabled = [
         "checking",
         "downloading",

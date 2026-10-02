@@ -15,7 +15,8 @@
     "smoke": "node scripts/smoke.cjs",
     "package": "node scripts/package.cjs",
     "installer": "node scripts/installer.cjs",
-    "release": "node scripts/release.cjs"
+    "release": "node scripts/release.cjs",
+    "release:mac": "node scripts/mac-release.cjs"
   },
   "dependencies": {
     "decimal.js": "10.6.0",

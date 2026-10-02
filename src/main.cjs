@@ -26,6 +26,9 @@ const { UpdateGate } = require("./update-gate.cjs");
 const { AppUpdates } = require("./app-updates.cjs");
 const { Analytics } = require("./analytics.cjs");
 const smoke = process.argv.includes("--smoke");
+const manualMacUpdates =
+  process.platform === "darwin" &&
+  require("../package.json").macAutoUpdates !== true;
 const exchange = new Exchange({ enabled: !smoke });
 const reportDiagnose = process.argv.includes("--reports-diagnose");
 const diagnose = process.argv.includes("--diagnose") || reportDiagnose;
@@ -303,6 +306,12 @@ if (!app.requestSingleInstanceLock()) {
               }
             );
           case "updates-check":
+            if (manualMacUpdates && app.isPackaged && !smoke && !diagnose) {
+              await require("electron").shell.openExternal(
+                "https://beautiful-sea.github.io/hashrate-manager/#download",
+              );
+              return updates.state();
+            }
             return updates.check();
           case "updates-install":
             return updates.requestInstall();
@@ -438,7 +447,11 @@ if (!app.requestSingleInstanceLock()) {
       });
       const gate = new UpdateGate(monitor, reports, store);
       updates = new AppUpdates({
-        enabled: app.isPackaged && !smoke && !diagnose,
+        enabled: app.isPackaged && !smoke && !diagnose && !manualMacUpdates,
+        manualDownloadUrl:
+          app.isPackaged && manualMacUpdates && !smoke && !diagnose
+            ? "https://beautiful-sea.github.io/hashrate-manager/#download"
+            : null,
         version: app.getVersion(),
         updater:
           app.isPackaged && !smoke && !diagnose

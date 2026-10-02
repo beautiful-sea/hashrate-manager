@@ -4,6 +4,7 @@ class AppUpdates extends EventEmitter {
     updater,
     version,
     enabled = true,
+    manualDownloadUrl = null,
     begin = () => {},
     acquire,
     release,
@@ -13,6 +14,7 @@ class AppUpdates extends EventEmitter {
     Object.assign(this, { updater, begin, acquire, release, install, enabled });
     this.value = {
       current: version,
+      manualDownloadUrl,
       status: enabled ? "idle" : "disabled",
       percent: 0,
       version: null,

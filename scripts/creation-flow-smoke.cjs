@@ -22,7 +22,11 @@ app.setPath("userData", profile);
 app.commandLine.appendSwitch("no-proxy-server");
 const keyPath = path.join(profile, "fixture-key.pem");
 const certPath = path.join(profile, "fixture-cert.pem");
-const openssl = "E:/laragon/bin/git/mingw64/bin/openssl.exe";
+const openssl =
+  process.env.HASHRATE_OPENSSL ||
+  (process.platform === "win32"
+    ? "E:/laragon/bin/git/mingw64/bin/openssl.exe"
+    : "openssl");
 execFileSync(
   openssl,
   [

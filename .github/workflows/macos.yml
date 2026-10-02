@@ -1,0 +1,68 @@
+name: Build and publish macOS
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Stable version matching the source being published
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: mac-release-${{ inputs.version }}
+  cancel-in-progress: false
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+          - arch: x64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Validate version
+        run: node -e "if(!/^\\d+\\.\\d+\\.\\d+$/.test(process.env.RELEASE_VERSION))process.exit(1)"
+      - run: npm ci
+      - run: npm test
+      - run: npm run check
+      - run: npm run lint
+      - name: Build and test packaged app
+        run: node scripts/mac-release.cjs "$RELEASE_VERSION" "${{ matrix.arch }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-${{ matrix.arch }}
+          if-no-files-found: error
+          path: |
+            dist/mac/*/*/*.dmg
+            dist/mac/*/*/*.zip
+            dist/mac/*/*/*.blockmap
+            dist/mac/*/*/*.yml
+            dist/mac/*/*/verification-*.json
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: mac-artifacts
+      - name: Verify both packages and publish atomically
+        run: node scripts/publish-mac-release.cjs mac-artifacts

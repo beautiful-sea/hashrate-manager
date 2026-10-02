@@ -101,3 +101,21 @@ test("failed install releases maintenance gate and disabled diagnostics never ch
   disabled.start();
   assert.equal(disabled.state().status, "disabled");
 });
+
+test("unsigned Mac distribution offers a manual download without invoking an installer", async () => {
+  const updates = new AppUpdates({
+    updater: null,
+    version: "0.2.41",
+    enabled: false,
+    manualDownloadUrl:
+      "https://beautiful-sea.github.io/hashrate-manager/#download",
+  });
+  assert.equal((await updates.check()).status, "disabled");
+  assert.equal(
+    updates.state().manualDownloadUrl,
+    "https://beautiful-sea.github.io/hashrate-manager/#download",
+  );
+  assert.throws(() => updates.requestInstall(), /ainda não está pronta/);
+  updates.start();
+  assert.equal(updates.timer, undefined);
+});
