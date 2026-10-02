@@ -36,10 +36,6 @@ jobs:
         env:
           EXPECTED_SOURCE: ${{ inputs.source_commit }}
         run: test -z "$EXPECTED_SOURCE" || test "$EXPECTED_SOURCE" = "$GITHUB_SHA"
-      - name: Verify requested source
-        env:
-          EXPECTED_SOURCE: ${{ inputs.source_commit }}
-        run: test -z "$EXPECTED_SOURCE" || test "$EXPECTED_SOURCE" = "$GITHUB_SHA"
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

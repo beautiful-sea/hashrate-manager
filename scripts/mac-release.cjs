@@ -170,7 +170,13 @@ async function release() {
   fs.renameSync(channel, path.join(output, "latest-mac-" + arch + ".yml"));
   const assets = fs
     .readdirSync(output)
-    .filter((name) => /\.(dmg|zip|blockmap|yml)$/.test(name));
+    .filter(
+      (name) =>
+        name === "latest-mac-" + arch + ".yml" ||
+        new RegExp(
+          "^Hashrate-Manager-mac-" + arch + "\\.(dmg|zip)(\\.blockmap)?$",
+        ).test(name),
+    );
   assert(assets.includes("Hashrate-Manager-mac-" + arch + ".dmg"));
   assert(assets.includes("Hashrate-Manager-mac-" + arch + ".zip"));
   const report = {
