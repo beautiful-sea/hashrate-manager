@@ -665,3 +665,80 @@ details p {
     transition: none;
   }
 }
+
+.platform-downloads {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  min-width: 530px;
+}
+.platform-download {
+  border-left: 1px solid #3d5948;
+  padding-left: 20px;
+}
+.platform-download h3 {
+  font-size: 18px;
+  margin-bottom: 18px;
+}
+.platform-download .button {
+  width: 100%;
+  gap: 20px;
+  padding: 16px;
+  font-size: 13px;
+}
+.platform-downloads > .text-link {
+  grid-column: 1/-1;
+  margin: 0;
+}
+.chip-caption {
+  font-size: 11px !important;
+  color: #b2c7b9 !important;
+  margin: 8px 0 16px;
+}
+.mac-intel {
+  border: 1px solid #6fa785;
+  background: transparent;
+  color: var(--green);
+}
+.mac-intel:hover {
+  background: #20392b;
+}
+.mac-signing-note {
+  font-size: 11px !important;
+  line-height: 1.6 !important;
+  color: #b2c7b9 !important;
+  max-width: 245px;
+}
+.download-section {
+  align-items: flex-start;
+}
+@media (max-width: 1000px) {
+  .download-section {
+    flex-direction: column;
+    gap: 25px;
+  }
+  .platform-downloads {
+    min-width: 0;
+    width: 100%;
+  }
+  .mac-signing-note {
+    max-width: 100%;
+  }
+}
+@media (max-width: 560px) {
+  .platform-downloads {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .platform-download {
+    padding: 0;
+    border-left: 0;
+  }
+  .platform-download + .platform-download {
+    border-top: 1px solid #3d5948;
+    padding-top: 25px;
+  }
+  .platform-download .button {
+    max-width: 100%;
+  }
+}
